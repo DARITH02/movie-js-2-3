@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sample Movie Modal</title>
+    <style>
+      /* Your CSS stays the same, copied from original */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: sans-serif;
+        padding: 40px;
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      h1 {
+        color: white;
+        text-align: center;
+        margin-bottom: 40px;
+        font-size: 36px;
+      }
+      .movies-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+      .movie-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        padding: 10px;
+        text-align: center;
+        color: white;
+      }
+      .movie-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      }
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 1000;
+        padding: 40px 20px;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-overlay.active {
+        display: flex;
+      }
+      .modal {
+        background: linear-gradient(135deg, #2d2d44, #1a1a2e);
+        border-radius: 20px;
+        max-width: 700px;
+        width: 100%;
+        position: relative;
+        color: white;
+        overflow: hidden;
+        padding: 20px;
+      }
+      .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.6);
+        border: none;
+        font-size: 28px;
+        color: white;
+        cursor: pointer;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+      }
+      .close-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+      .modal-header {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+      .modal-poster img {
+        width: 150px;
+        height: 225px;
+        object-fit: cover;
+        border-radius: 12px;
+      }
+      .modal-info {
+        flex: 1;
+      }
+      .modal-title {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .modal-meta {
+        display: flex;
+        gap: 20px;
+        font-size: 14px;
+        color: #aaa;
+        margin-bottom: 10px;
+      }
+      .genres {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
+      .genre-tag {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+      }
+      .overview-section h3 {
+        font-size: 18px;
+        color: #ffd700;
+        margin-bottom: 10px;
+      }
+      .overview-text {
+        color: #ddd;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🎬 Popular Movies</h1>
+      <div class="movies-grid">
+        <div class="movie-card" onclick="openMovieModal()">Sample Movie</div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal" id="modal">
+        <button class="close-btn" id="closeBtn">&times;</button>
+        <div id="modalContent"></div>
+      </div>
+    </div>
+
+    <script>
+      const modalOverlay = document.getElementById("modalOverlay");
+      const modalContent = document.getElementById("modalContent");
+      const closeBtn = document.getElementById("closeBtn");
+
+      // Dummy movie data
+      const sampleMovie = {
+        title: "Inception",
+        vote_average: 8.8,
+        release_date: "2010-07-16",
+        runtime: 148,
+        genres: [{ name: "Action" }, { name: "Sci-Fi" }, { name: "Thriller" }],
+        overview:
+          "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.",
+        poster_path:
+          "https://image.tmdb.org/t/p/w500/qmDpIHrmpJINaRKAfWQfftjCdyi.jpg",
+        backdrop_path:
+          "https://image.tmdb.org/t/p/original/s3TBrRGB1iav7gFOCNx3H31MoES.jpg",
+        tagline: "Your mind is the scene of the crime",
+      };
+
+      // Open modal function
+      function openMovieModal() {
+        modalOverlay.classList.add("active");
+
+        modalContent.innerHTML = `
+        <div class="modal-header">
+            <div class="modal-poster">
+                <img src="${sampleMovie.poster_path}" alt="${
+          sampleMovie.title
+        }">
+            </div>
+            <div class="modal-info">
+                <h2 class="modal-title">${sampleMovie.title}</h2>
+                <div class="modal-meta">
+                    <div>⭐ ${sampleMovie.vote_average}</div>
+                    <div>📅 ${sampleMovie.release_date}</div>
+                    <div>⏱️ ${sampleMovie.runtime} min</div>
+                </div>
+                <div class="genres">
+                    ${sampleMovie.genres
+                      .map(
+                        (genre) =>
+                          `<span class="genre-tag">${genre.name}</span>`
+                      )
+                      .join("")}
+                </div>
+                ${
+                  sampleMovie.tagline
+                    ? `<p style="font-style:italic;color:#aaa;margin-bottom:10px;">"${sampleMovie.tagline}"</p>`
+                    : ""
+                }
+            </div>
+        </div>
+        <div class="overview-section">
+            <h3>Overview</h3>
+            <p class="overview-text">${sampleMovie.overview}</p>
+        </div>
+    `;
+      }
+
+      // Close modal
+      function closeModal() {
+        modalOverlay.classList.remove("active");
+      }
+
+      // Event listeners
+      closeBtn.addEventListener("click", closeModal);
+      modalOverlay.addEventListener("click", (e) => {
+        if (e.target === modalOverlay) closeModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeModal();
+      });
+    </script>
+  </body>
+</html>
